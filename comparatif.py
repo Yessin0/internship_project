@@ -51,6 +51,9 @@ def process_files(da_file_path, selected_folder):
     da_data = dataframes['da'][['Item', 'Description', 'Price', 'Quantity']]
     catalogue_data = dataframes['catalogue'][['Item', 'Description', 'Price']]
     sl_data = dataframes['sl'][['Item', 'Description', 'Price']]
+    # Replace the ? in the Description column
+    da_data['Description'] = da_data['Description'].str.replace('¿', '’')
+    catalogue_data['Description'] = catalogue_data['Description'].str.replace('¿', '’')
     # Rename columns for consistency
     da_data.rename(columns={'Description': 'Description_DA', 'Price': 'Price_DA'}, inplace=True)
     # Perform the Comparison with catalogue
@@ -62,10 +65,9 @@ def process_files(da_file_path, selected_folder):
 
     comparison_results_catalogue['Price_Match'] = comparison_results_catalogue.apply(
         lambda row: 'ok' if row['Price_DA'] == row['Price'] else 'nok', axis=1)
-    # Warning
-    for index, row in comparison_results_catalogue.iterrows():
-        if row['Price_DA'] > row['Price']:
-            print(f"WARNING : DA price is higher than catalogue price for Item {row['Item']}")
+    # Warning Column
+    comparison_results_catalogue['Warning'] = comparison_results_catalogue.apply(
+        lambda row: 'DA Price is higher than Catalogue price' if row['Price_DA'] > row['Price'] else '', axis=1)
     # Handle Missing Values
     # comparison_results_catalogue['Quantity'].fillna(0, inplace=True) (method not working in pandas 3.0)
     comparison_results_catalogue.fillna({'Quantity': 0}, inplace=True)
@@ -76,10 +78,9 @@ def process_files(da_file_path, selected_folder):
         lambda row: 'ok' if row['Description_DA'] == row['Description'] else 'nok', axis=1)
     comparison_results_sl['Price_Match'] = comparison_results_sl.apply(
         lambda row: 'ok' if row['Price_DA'] == row['Price'] else 'nok', axis=1)
-    # Warning
-    for index, row in comparison_results_sl.iterrows():
-        if row['Price_DA'] > row['Price']:
-            print(f"WARNING : DA price is higher than SL price for Item{row['Item_DA']}")
+    # Warning Column
+    comparison_results_sl['Warning'] = comparison_results_sl.apply(
+        lambda row: 'DA Price is higher than SL price' if row['Price_DA'] > row['Price'] else '', axis=1)
     # Output the Results
     with pd.ExcelWriter('comparison_results.xlsx') as writer:
         comparison_results_catalogue.to_excel(writer, sheet_name='DA_catalogue_Comparison', index=False)
