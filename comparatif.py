@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import re
 
 
 def read_files(folder_path):
@@ -37,6 +38,17 @@ def read_files(folder_path):
     return dataframes
 
 
+def clean_string(s):
+    s = re.sub(r'^[\d.]+', '', s)
+    s = re.sub(r'\.(?!:)', '', s)
+    # s = re.sub(r'(_[A-Za-z]+_\d+)$', '', s)
+    return s
+
+
+def compare_strings(s1,s2):
+    return s1 in s2 or s2 in s1
+
+
 def process_files(da_file_path, selected_folder):
     folder_path = os.path.join('input_files', selected_folder)
     folder_name = os.path.basename(folder_path)
@@ -48,12 +60,15 @@ def process_files(da_file_path, selected_folder):
 
     supplier_name = folder_name.split('_')[0]
     # Prepare the DataFrames
-    da_data = dataframes['da'][['Item', 'Description', 'Price', 'Quantity']]
+    da_data = dataframes['da'][['Item', 'Description', 'Price', 'Quantity', '[  ]']]
     catalogue_data = dataframes['catalogue'][['Item', 'Description', 'Price']]
     sl_data = dataframes['sl'][['Item', 'Description', 'Price']]
     # Replace the ? in the Description column
     da_data['Description'] = da_data['Description'].str.replace('¿', '’')
+    da_data['[  ]'] = da_data['[  ]'].str.replace('¿', '’')
     catalogue_data['Description'] = catalogue_data['Description'].str.replace('¿', '’')
+    # clean the [] column
+    da_data['[  ]'] = da_data['[  ]'].apply(clean_string)
     # Rename columns for consistency
     da_data.rename(columns={'Description': 'Description_DA', 'Price': 'Price_DA'}, inplace=True)
     # Perform the Comparison with catalogue
@@ -62,7 +77,8 @@ def process_files(da_file_path, selected_folder):
     comparison_results_catalogue['Supplier'] = supplier_name
     comparison_results_catalogue['Description_Match'] = comparison_results_catalogue.apply(
         lambda row: 'ok' if row['Description_DA'] == row['Description'] else 'nok', axis=1)
-
+    comparison_results_catalogue['[  ]_Match'] = comparison_results_catalogue.apply(
+        lambda row: 'ok' if compare_strings(row['[  ]'], row['Description']) else 'nok', axis=1)
     comparison_results_catalogue['Price_Match'] = comparison_results_catalogue.apply(
         lambda row: 'ok' if row['Price_DA'] == row['Price'] else 'nok', axis=1)
     # Warning Column
@@ -76,6 +92,8 @@ def process_files(da_file_path, selected_folder):
     comparison_results_sl.rename(columns={'Item_x': 'Item_DA', 'Item_y': 'Item_SL'}, inplace=True)
     comparison_results_sl['Description_Match'] = comparison_results_sl.apply(
         lambda row: 'ok' if row['Description_DA'] == row['Description'] else 'nok', axis=1)
+    comparison_results_sl['[  ]_Match'] = comparison_results_sl.apply(
+        lambda row: 'ok' if compare_strings(row['[  ]'], row['Description']) else 'nok', axis=1)
     comparison_results_sl['Price_Match'] = comparison_results_sl.apply(
         lambda row: 'ok' if row['Price_DA'] == row['Price'] else 'nok', axis=1)
     # Warning Column
