@@ -39,6 +39,7 @@ def read_files(folder_path):
 
 
 def clean_string(s):
+    s = str(s)
     s = re.sub(r'^[\d.]+', '', s)
     s = re.sub(r'\.(?!:)', '', s)
     # s = re.sub(r'(_[A-Za-z]+_\d+)$', '', s)
@@ -46,6 +47,8 @@ def clean_string(s):
 
 
 def compare_strings(s1,s2):
+    if pd.isna(s1) or pd.isna(s2):
+        return False
     return s1 in s2 or s2 in s1
 
 
@@ -88,7 +91,7 @@ def process_files(da_file_path, selected_folder):
     # comparison_results_catalogue['Quantity'].fillna(0, inplace=True) (method not working in pandas 3.0)
     comparison_results_catalogue.fillna({'Quantity': 0}, inplace=True)
     # Perform the Comparison with sl
-    comparison_results_sl = pd.merge(da_data, sl_data, left_on='Description_DA', right_on='Description', how='inner')
+    comparison_results_sl = pd.merge(da_data, sl_data, left_on='Description_DA', right_on='Description', how='left')
     comparison_results_sl.rename(columns={'Item_x': 'Item_DA', 'Item_y': 'Item_SL'}, inplace=True)
     comparison_results_sl['Description_Match'] = comparison_results_sl.apply(
         lambda row: 'ok' if row['Description_DA'] == row['Description'] else 'nok', axis=1)
