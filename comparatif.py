@@ -79,11 +79,13 @@ def process_files(da_file_path, selected_folder):
 
     comparison_results_catalogue['Supplier'] = supplier_name
     comparison_results_catalogue['Description_Match'] = comparison_results_catalogue.apply(
-        lambda row: 'ok' if row['Description_DA'] == row['Description'] else 'nok', axis=1)
+        lambda row: 'ok' if not pd.isna(row['Description']) and row['Description_DA'] == row['Description']
+        else ('NULL' if pd.isna(row['Description']) else 'nok'), axis=1)
     comparison_results_catalogue['[  ]_Match'] = comparison_results_catalogue.apply(
         lambda row: 'ok' if compare_strings(row['[  ]'], row['Description']) else 'nok', axis=1)
     comparison_results_catalogue['Price_Match'] = comparison_results_catalogue.apply(
-        lambda row: 'ok' if row['Price_DA'] == row['Price'] else 'nok', axis=1)
+        lambda row: 'ok' if not pd.isna(row['Price']) and row['Price_DA'] == row['Price']
+        else ('NULL' if pd.isna(row['Price']) else 'nok'), axis=1)
     # Warning Column
     comparison_results_catalogue['Warning'] = comparison_results_catalogue.apply(
         lambda row: 'DA Price is higher than Catalogue price' if row['Price_DA'] > row['Price'] else '', axis=1)
@@ -94,11 +96,13 @@ def process_files(da_file_path, selected_folder):
     comparison_results_sl = pd.merge(da_data, sl_data, left_on='Description_DA', right_on='Description', how='left')
     comparison_results_sl.rename(columns={'Item_x': 'Item_DA', 'Item_y': 'Item_SL'}, inplace=True)
     comparison_results_sl['Description_Match'] = comparison_results_sl.apply(
-        lambda row: 'ok' if row['Description_DA'] == row['Description'] else 'nok', axis=1)
+        lambda row: 'ok' if not pd.isna(row['Description']) and row['Description_DA'] == row['Description']
+        else ('NULL' if pd.isna(row['Description']) else 'nok'), axis=1)
     comparison_results_sl['[  ]_Match'] = comparison_results_sl.apply(
         lambda row: 'ok' if compare_strings(row['[  ]'], row['Description']) else 'nok', axis=1)
     comparison_results_sl['Price_Match'] = comparison_results_sl.apply(
-        lambda row: 'ok' if row['Price_DA'] == row['Price'] else 'nok', axis=1)
+        lambda row: 'ok' if not pd.isna(row['Price']) and row['Price_DA'] == row['Price']
+        else ('NULL' if pd.isna(row['Price']) else 'nok'), axis=1)
     # Warning Column
     comparison_results_sl['Warning'] = comparison_results_sl.apply(
         lambda row: 'DA Price is higher than SL price' if row['Price_DA'] > row['Price'] else '', axis=1)
