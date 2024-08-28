@@ -1,3 +1,4 @@
+from PIL import Image, ImageTk
 import tkinter as tk
 from tkinter import filedialog, ttk, messagebox
 import comparatif
@@ -8,19 +9,29 @@ class ComparaisonApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Comparison App")
+
         # DA File Selection
         self.da_file_path = tk.StringVar()
         ttk.Label(root, text="Select DA File:").grid(row=0, column=0, padx=10, pady=5, sticky=tk.W)
         self.da_entry = ttk.Entry(root, textvariable=self.da_file_path)
         self.da_entry.grid(row=0, column=1, padx=10, pady=5)
         ttk.Button(root, text="Browse DA File", command=self.browse_da_file).grid(row=0, column=2, padx=10, pady=5)
+
         # Folder Selection
         ttk.Label(root, text="Select Folder:").grid(row=1, column=0)
         self.folder_list = ttk.Combobox(root, state="readonly")
         self.folder_list.grid(row=1, column=1, padx=10, pady=5)
         ttk.Button(root, text="Browse Folder", command=self.browse_folder).grid(row=1, column=2, padx=10, pady=5)
 
+        # Compare Button
         ttk.Button(root, text="Compare", command=self.compare_files).grid(row=2, column=1, padx=10, pady=20)
+
+        # Add Direction Achat text at the bottom left
+        self.direction_label = ttk.Label(root, text="Direction Achat", font=("Helvetica", 10, "bold"))
+        self.direction_label.grid(row=3, column=0, padx=10, pady=20, sticky=tk.W)
+
+        # Add Ooredoo image at the bottom right
+        self.load_image()
 
     def browse_da_file(self):
         file_path = filedialog.askopenfilename(filetypes=[("Excel files", "*.xlsx *.xls")])
@@ -60,6 +71,16 @@ class ComparaisonApp:
             messagebox.showinfo("Success", "Comparison complete, report generated.")
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred during comparison: {e}")
+
+    def load_image(self):
+        try :
+            image = Image.open("ooredoo.png")  # Load the image
+            resized_image = image.resize((100, 100), Image.LANCZOS)  # Resize the image
+            self.image = ImageTk.PhotoImage(resized_image)
+            self.image_label = tk.Label(self.root, image=self.image)
+            self.image_label.grid(row=3, column=2, padx=10, pady=20, sticky=tk.E)
+        except Exception as e:
+            messagebox.showerror("Error",f"An error occurred during the loading: {e}")
 
 
 if __name__ == "__main__":

@@ -1,6 +1,8 @@
 import os
 import pandas as pd
 import re
+from openpyxl import load_workbook
+from openpyxl.styles import PatternFill
 
 
 def read_files(folder_path):
@@ -50,6 +52,25 @@ def compare_strings(s1,s2):
     if pd.isna(s1) or pd.isna(s2):
         return False
     return s1 in s2 or s2 in s1
+
+
+def auto_adjust_columns(worksheet, df):
+    # Set column widths to auto adjust
+    for idx, col in enumerate(df.columns):
+        max_length = max(df[col].astype(str).map(len).max(), len(col))
+        worksheet.set_column(idx, idx, max_length)
+
+
+def apply_conditional_formatting(worksheet, df , workbook):
+    format_red = workbook.add_format({'bg_color': 'red', 'font_color': 'white'})
+    format_yellow = workbook.add_format({'bg_color': 'yellow'})
+    # Apply formatting the "Match" columns
+    for row_num, row in df.iterrows():
+        for col_num, value in enumerate(row):
+            if value in ['nok', 'NULL']:
+                worksheet.write(row_num + 1, col_num, value, format_red)
+            elif 'DA Price is higher' in str(value):
+                worksheet.write(row_num + 1, col_num, value, format_yellow)
 
 
 def process_files(da_file_path, selected_folder):
@@ -107,7 +128,19 @@ def process_files(da_file_path, selected_folder):
     comparison_results_sl['Warning'] = comparison_results_sl.apply(
         lambda row: 'DA Price is higher than SL price' if row['Price_DA'] > row['Price'] else '', axis=1)
     # Output the Results
-    with pd.ExcelWriter('comparison_results.xlsx') as writer:
+    with pd.ExcelWriter('comparison_results.xlsx', engine='xlsxwriter') as writer:
         comparison_results_catalogue.to_excel(writer, sheet_name='DA_catalogue_Comparison', index=False)
         comparison_results_sl.to_excel(writer, sheet_name='DA_SL_Comparison', index=False)
+
+        # Access the workbook and the worksheets
+        workbook = writer.book
+        worksheet_catalogue = writer.sheets['DA_catalogue_Comparison']
+        worksheet_sl = writer.sheets['DA_SL_Comparison']
+
+        # Apply auto-adjustment and conditional formatting
+        auto_adjust_columns(worksheet_catalogue, comparison_results_catalogue)
+        apply_conditional_formatting(worksheet_catalogue, comparison_results_catalogue, workbook)
+        auto_adjust_columns(worksheet_sl, comparison_results_sl)
+        apply_conditional_formatting(worksheet_sl, comparison_results_sl, workbook)
+
         print(f"Comparison report saved to comparison_results.xlsx")
