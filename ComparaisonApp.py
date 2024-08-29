@@ -6,23 +6,27 @@ import comparatif
 import os
 import platform
 import warnings
+import colorama
+from colorama import Fore, Style
 
 # Remove the errors from the terminal
 warnings.filterwarnings("ignore", category=pd.errors.SettingWithCopyWarning)
+# Initialize colorama
+colorama.init()
 
 
 def print_author_name():
     python_version = platform.python_version()
-    print("\033[94m********************************************\033[0m")  # Blue
-    print("\033[94m*                                          *\033[0m")
-    print("\033[94m*     Application Name: Comparatif Tool     *\033[0m")
-    print("\033[94m*                                          *\033[0m")
-    print(f"\033[93m*     Author: [Your Name]                   *\033[0m")  # Yellow
-    print(f"\033[93m*     Date: 2024                        *\033[0m")
-    print(f"\033[93m*     Python Version: {python_version}                  *\033[0m")
-    print("\033[94m*     All rights reserved.                  *\033[0m")
-    print("\033[94m*                                          *\033[0m")
-    print("\033[94m********************************************\033[0m")
+    print(Fore.BLUE + "********************************************" + Style.RESET_ALL)
+    print(Fore.BLUE + "*                                          *" + Style.RESET_ALL)
+    print(Fore.BLUE + "*     Application Name: Comparatif Tool     *" + Style.RESET_ALL)
+    print(Fore.BLUE + "*                                          *" + Style.RESET_ALL)
+    print(Fore.YELLOW + f"*     Author: [YESSIN TOUMI]                   *" + Style.RESET_ALL)
+    print(Fore.YELLOW + f"*     Annee : 2024                       *" + Style.RESET_ALL)
+    print(Fore.YELLOW + f"*     Python Version: {python_version}                  *" + Style.RESET_ALL)
+    print(Fore.BLUE + "*     All rights reserved.                  *" + Style.RESET_ALL)
+    print(Fore.BLUE + "*                                          *" + Style.RESET_ALL)
+    print(Fore.BLUE + "********************************************" + Style.RESET_ALL)
     print("")
 
 
