@@ -1,11 +1,9 @@
 import os
 import pandas as pd
 import re
-from openpyxl import load_workbook
-from openpyxl.styles import PatternFill
 
 
-def read_files(folder_path):
+def read_files(folder_path):  # read the files from the folder
     dataframes = {'da': None, 'catalogue': None, 'sl': None}
     if not os.path.exists(folder_path):
         print(f"Folder '{folder_path}' does not exist")
@@ -40,7 +38,7 @@ def read_files(folder_path):
     return dataframes
 
 
-def clean_string(s):
+def clean_string(s):  # clean the string in the [ ] column
     s = str(s)
     s = re.sub(r'^[\d.]+', '', s)
     s = re.sub(r'\.(?!:)', '', s)
@@ -48,20 +46,20 @@ def clean_string(s):
     return s
 
 
-def compare_strings(s1,s2):
+def compare_strings(s1, s2): # compare the strings in description and [ ] columns
     if pd.isna(s1) or pd.isna(s2):
         return False
     return s1 in s2 or s2 in s1
 
 
-def auto_adjust_columns(worksheet, df):
+def auto_adjust_columns(worksheet, df):  # adjust the column width to fit the content
     # Set column widths to auto adjust
     for idx, col in enumerate(df.columns):
         max_length = max(df[col].astype(str).map(len).max(), len(col))
         worksheet.set_column(idx, idx, max_length)
 
 
-def apply_conditional_formatting(worksheet, df , workbook):
+def apply_conditional_formatting(worksheet, df, workbook):  # color the nok and the warning columns
     format_red = workbook.add_format({'bg_color': 'red', 'font_color': 'white'})
     format_yellow = workbook.add_format({'bg_color': 'yellow'})
     # Apply formatting the "Match" columns
@@ -73,7 +71,7 @@ def apply_conditional_formatting(worksheet, df , workbook):
                 worksheet.write(row_num + 1, col_num, value, format_yellow)
 
 
-def process_files(da_file_path, selected_folder):
+def process_files(da_file_path, selected_folder):  # process the files: read, compare, and output the results
     folder_path = os.path.join('input_files', selected_folder)
     folder_name = os.path.basename(folder_path)
     print(f"Reading files from folder: {selected_folder}")

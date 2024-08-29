@@ -3,6 +3,22 @@ import tkinter as tk
 from tkinter import filedialog, ttk, messagebox
 import comparatif
 import os
+import platform
+
+
+def print_author_name():
+    python_version = platform.python_version()
+    print("********************************************")
+    print("*                                          *")
+    print("*     Application Name: Comparatif Tool     *")
+    print("*                                          *")
+    print(f"*     Author: [YESSIN TOUMI]                   *")
+    print(f"*     Date: 2024                        *")
+    print(f"*     Python Version: {python_version}                  *")
+    print("*     All rights reserved.                  *")
+    print("*                                          *")
+    print("********************************************")
+    print("")
 
 
 class ComparaisonApp:
@@ -72,7 +88,7 @@ class ComparaisonApp:
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred during comparison: {e}")
 
-    def load_image(self):
+    def load_image(self):  # load the ooredoo logo
         try :
             image = Image.open("ooredoo.png")  # Load the image
             resized_image = image.resize((100, 100), Image.LANCZOS)  # Resize the image
@@ -84,6 +100,7 @@ class ComparaisonApp:
 
 
 if __name__ == "__main__":
+    print_author_name()
     root = tk.Tk()
     app = ComparaisonApp(root)
     root.mainloop()
