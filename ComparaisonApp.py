@@ -1,23 +1,28 @@
+import pandas as pd
 from PIL import Image, ImageTk
 import tkinter as tk
 from tkinter import filedialog, ttk, messagebox
 import comparatif
 import os
 import platform
+import warnings
+
+# Remove the errors from the terminal
+warnings.filterwarnings("ignore", category=pd.errors.SettingWithCopyWarning)
 
 
 def print_author_name():
     python_version = platform.python_version()
-    print("********************************************")
-    print("*                                          *")
-    print("*     Application Name: Comparatif Tool     *")
-    print("*                                          *")
-    print(f"*     Author: [YESSIN TOUMI]                   *")
-    print(f"*     Date: 2024                        *")
-    print(f"*     Python Version: {python_version}                  *")
-    print("*     All rights reserved.                  *")
-    print("*                                          *")
-    print("********************************************")
+    print("\033[94m********************************************\033[0m")  # Blue
+    print("\033[94m*                                          *\033[0m")
+    print("\033[94m*     Application Name: Comparatif Tool     *\033[0m")
+    print("\033[94m*                                          *\033[0m")
+    print(f"\033[93m*     Author: [Your Name]                   *\033[0m")  # Yellow
+    print(f"\033[93m*     Date: 2024                        *\033[0m")
+    print(f"\033[93m*     Python Version: {python_version}                  *\033[0m")
+    print("\033[94m*     All rights reserved.                  *\033[0m")
+    print("\033[94m*                                          *\033[0m")
+    print("\033[94m********************************************\033[0m")
     print("")
 
 
